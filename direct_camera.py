@@ -103,8 +103,6 @@ while True:
     elif key == ord('r'):
         selecting_roi = True
 
-print(img.shape[1])
-print(img.shape[0])
 
 cap.release()  # 오픈한 cap개체를 해제
 out.release()  # 오픈한 out개체를 해제
