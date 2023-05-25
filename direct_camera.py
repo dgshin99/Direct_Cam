@@ -54,15 +54,6 @@ while True:
 
     left, top, w, h = [int(v) for v in box]  # box에 있는 데이터 가져오기
 
-    # 영상의 크기는 고정이고 오브젝트 트래킹 이후 box의 크기는 유동적이어서 잘 계산해야한다.
-    center_x = left + w / 2
-    center_y = top + h / 2
-
-    result_top = int(center_y - output_size[1] / 4)
-    result_bottom = int(center_y + output_size[1] / 4 * 3)
-    result_left = int(center_x - output_size[0] / 2)
-    result_right = int(center_x + output_size[0] / 2)
-
     if left < 0:
       left = 0
     if top < 0:
@@ -72,6 +63,17 @@ while True:
     if top + h > img.shape[0]:
       h = img.shape[0] - top
       
+    # 영상의 크기는 고정이고 오브젝트 트래킹 이후 box의 크기는 유동적이어서 잘 계산해야한다.
+    center_x = left + w / 2
+    center_y = top + h / 2
+
+    result_top = int(center_y - output_size[1] / 4)
+    result_bottom = int(center_y + output_size[1] / 4 * 3)
+    result_left = int(center_x - output_size[0] / 2)
+    result_right = int(center_x + output_size[0] / 2)
+
+
+
     if result_left < 0:
         result_left = 0
     if result_top < 0:
@@ -103,6 +105,8 @@ while True:
     elif key == ord('r'):
         selecting_roi = True
 
+print(img.shape[1])
+print(img.shape[0])
 
 cap.release()  # 오픈한 cap개체를 해제
 out.release()  # 오픈한 out개체를 해제
