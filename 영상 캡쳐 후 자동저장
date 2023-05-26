@@ -1,50 +1,60 @@
 import cv2
 import numpy as np
-import datetime
+import sys
 
+#합성시킬 두 개의 영상 열기
+cap1 = cv2.VideoCapture('video1.mp4')
+cap2 = cv2.VideoCapture('video2.mp4')
 
- 
+if not cap1.isOpened() or not cap2.isOpened():
+	sys.exit()
+    
+    
+#각 영상 프레임 수
+frame_cnt1 = round(cap1.get(cv2.CAP_PROP_FRAME_COUNT))
+frame_cnt2 = round(cap2.get(cv2.CAP_PROP_FRAME_COUNT))
+fps = cap1.get(cv2.CAP_PROP_FPS)
+effect_frames = int(fps*2)
 
-capture = cv2.VideoCapture("Dynamite.mp4") #영상파일을 연속된 프레임으로 쪼개 출력
+delay = int(1000/fps)
 
- 
+#영상 가로 세로 설정
+w = round(cap1.get(cv2.CAP_PROP_FRAME_WIDTH))
+h = round(cap1.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-width = int(capture.get(3))  # 가로
+#비디오 코덱 설정
+fourcc = cv2.VideoWriter_fourcc(*'DIVX')
 
-height = int(capture.get(4))  # 세로값 가져오기
+out = cv2.VideoWriter('output.avi', fourcc, fps, (w,h))
 
- 
-
-while (capture.isOpened):
-
-    ret, frame = capture.read()
-
-    if ret == False:
-
-        break
-
-    cv2.imshow("VideoFrame", frame) #하나의 프레임 출력함
-
- 
-
-    now = datetime.datetime.now().strftime("%d_%H-%M-%S") #일,시각,분,초
-
-    key = cv2.waitKey(33)  # 1) & 0xFF
-
- 
-
-    if key == 27:  # esc 종료 (esc 키코)
-
-        break
-
-    elif key == 26:  # ctrl + z 키코드(다른 걸로 변경 가능)
-
-       cv2.IMREAD_UNCHANGED 
-
-        cv2.imwrite("C:/vod/capture/cap01" + ".png", frame) #특정이미지 파일로 저장
-
- 
-
-capture.release()
-
-cv2.destroyAllWindows()
+#1번 영상 열기
+for i in range(frame_cnt1 - effect_frames):
+	ret1, frame1 = cap1.read()
+    
+    if not ret1:
+    	break
+        
+    out.write(frame1)
+    cv2.imshow('frame',frame1)
+    cv2.waitKey(delay)
+    
+#합성하기
+for i in range(effect_frames):
+	ret1, frame1 = cap1.read()
+    ret2, frame2 = cap2.read()
+    
+    #가중치 계산
+    #만약 i가 1인경우 alpha는 1- 1/48 , 1-alpha는 0에 가까운 값
+    alpha = 1.0 - i / effect_frames
+    frame = cv2.addWeighted(frame1, alpha, frame2, 1-alpha,0)
+    out.write(frame)
+    
+for i in range(effect_frames, frame_cnt2):
+	ret2, frame2 = cap2.read()
+    
+    if not ret2:
+    	break
+        
+    out.write(frame2)
+    cv2.imshow('frame', frame2)
+    cv2.waitKey(delay)
