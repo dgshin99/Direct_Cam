@@ -1,0 +1,50 @@
+import cv2
+import numpy as np
+import datetime
+
+
+ 
+
+capture = cv2.VideoCapture("Dynamite.mp4") #영상파일을 연속된 프레임으로 쪼개 출력
+
+ 
+
+width = int(capture.get(3))  # 가로
+
+height = int(capture.get(4))  # 세로값 가져오기
+
+ 
+
+while (capture.isOpened):
+
+    ret, frame = capture.read()
+
+    if ret == False:
+
+        break
+
+    cv2.imshow("VideoFrame", frame) #하나의 프레임 출력함
+
+ 
+
+    now = datetime.datetime.now().strftime("%d_%H-%M-%S") #일,시각,분,초
+
+    key = cv2.waitKey(33)  # 1) & 0xFF
+
+ 
+
+    if key == 27:  # esc 종료 (esc 키코)
+
+        break
+
+    elif key == 26:  # ctrl + z 키코드(다른 걸로 변경 가능)
+
+       cv2.IMREAD_UNCHANGED 
+
+        cv2.imwrite("C:/vod/capture/cap01" + ".png", frame) #특정이미지 파일로 저장
+
+ 
+
+capture.release()
+
+cv2.destroyAllWindows()
